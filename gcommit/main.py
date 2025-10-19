@@ -17,6 +17,11 @@ from .llm import generate_commit_message, load_config
 app = typer.Typer(help='AI-powered git commit message generator')
 
 
+def cli():
+    """CLI interface"""
+    app()
+
+
 def edit_in_editor(message: str) -> Optional[str]:
     """Open editor to edit commit message"""
     # TODO: add support for other env, gitconfig, etc.
