@@ -10,8 +10,8 @@ from typing import Optional
 
 import typer
 
-from .git_ops import get_git_changes, make_commit
-from .llm import generate_commit_message, load_config
+from gcommit.git_ops import get_git_changes, make_commit
+from gcommit.llm import generate_commit_message, load_config
 
 
 app = typer.Typer(help='AI-powered git commit message generator')
