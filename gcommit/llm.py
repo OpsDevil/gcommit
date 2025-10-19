@@ -148,7 +148,7 @@ Rules:
 - Output exactly ONE commit message
 
 Example:
-feat(auth): add JWT authentication
+feat: add JWT authentication
 
 Implement JWT-based authentication with refresh tokens.
 Add middleware for protected routes.
