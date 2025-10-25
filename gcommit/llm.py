@@ -19,7 +19,9 @@ def load_prompt(format_name: str) -> str:
     return (prompts_dir / 'conventional.txt').read_text()
 
 
-def build_prompt(staged_files: List[str], diff: str, branch_name: str, config: Config, user_hint: Optional[str] = None) -> str:
+def build_prompt(
+    staged_files: List[str], diff: str, branch_name: str, config: Config, user_hint: Optional[str] = None
+) -> str:
     """Build prompt for LLM"""
     files_list = ', '.join(staged_files)
     if config.commit_format == 'custom':
@@ -32,9 +34,11 @@ def build_prompt(staged_files: List[str], diff: str, branch_name: str, config: C
         instructions = load_prompt(config.commit_format)
     base_template = load_prompt('base')
 
-    user_context = ""
+    user_context = ''
     if user_hint:
-        user_context = f"User context: {user_hint}\n(Use this as additional context to understand the changes better)\n\n"
+        user_context = (
+            f'User context: {user_hint}\n(Use this as additional context to understand the changes better)\n\n'
+        )
 
     return base_template.format(
         language=config.language,
@@ -42,7 +46,7 @@ def build_prompt(staged_files: List[str], diff: str, branch_name: str, config: C
         user_context=user_context,
         files_list=files_list,
         branch_name=branch_name,
-        diff=diff
+        diff=diff,
     )
 
 
@@ -60,7 +64,12 @@ def clean_markdown_code_blocks(text: str) -> str:
 
 
 def generate_commit_message(
-    staged_files: List[str], diff: str, branch_name: str, config: Config, user_hint: Optional[str] = None, verbose: bool = False
+    staged_files: List[str],
+    diff: str,
+    branch_name: str,
+    config: Config,
+    user_hint: Optional[str] = None,
+    verbose: bool = False,
 ) -> str:
     """Generate commit message using OpenAI API"""
     prompt = build_prompt(staged_files, diff, branch_name, config, user_hint)

@@ -58,12 +58,11 @@ def get_current_branch() -> str:
     """Get current git branch name"""
     try:
         result = subprocess.run(
-            ['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
-            capture_output=True, text=True, check=True
+            ['git', 'rev-parse', '--abbrev-ref', 'HEAD'], capture_output=True, text=True, check=True
         )
         return result.stdout.strip()
     except subprocess.CalledProcessError:
-        return "unknown"
+        return 'unknown'
 
 
 def get_git_changes() -> GitChanges:
