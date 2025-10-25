@@ -98,7 +98,7 @@ commit:
 
 ## ⚙️ Configuration
 
-Create `~/.gcommit.yaml` for global settings or `.gcommit.yaml` in your project:
+Create `~/.config/gcommit/config.yaml` for global settings or `.gcommit.yaml` in your project:
 
 ```yaml
 llm:
@@ -112,7 +112,14 @@ commit:
   format: conventional      # conventional, simple, or custom
 ```
 
-**Priority order:** CLI flags → Environment variables → Local config → Home config → Defaults
+**Priority order:** `--config` flag → `GCOMMIT_CONFIG` env → Local `.gcommit.yaml` → XDG home config → Defaults
+
+### Configuration Override Options
+
+- **CLI flag**: `gcommit --config /path/to/config.yaml`
+- **Environment variable**: `export GCOMMIT_CONFIG=/path/to/config.yaml`
+- **Local config**: `.gcommit.yaml` in project directory (searched up to git root)
+- **XDG home config**: `~/.config/gcommit/config.yaml` (auto-created on first run)
 
 ### Environment Variables
 
@@ -167,6 +174,12 @@ gcommit --verbose         # See the prompt, API call details, tokens used
 
 ```bash
 gcommit --model gpt-4o    # Use more powerful model for complex changes
+```
+
+### Custom Config File
+
+```bash
+gcommit --config /path/to/config.yaml  # Use specific config file
 ```
 
 ## 🔥 Pro Tips

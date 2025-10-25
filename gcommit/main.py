@@ -69,6 +69,7 @@ def interactive_confirm(message: str) -> Optional[str]:
 def main(
     auto: bool = typer.Option(False, '--auto', help='Auto-commit without confirmation'),
     commit_format: Optional[str] = typer.Option(None, '--format', help='Commit format (conventional or simple)'),
+    config_file: Optional[str] = typer.Option(None, '--config', help='Path to config file'),
     edit: bool = typer.Option(False, '--edit', help='Open editor to edit generated message'),
     language: Optional[str] = typer.Option(None, '--language', help='Commit message language (e.g., english, russian)'),
     message: Optional[str] = typer.Option(None, '-m', '--message', help='User hint for commit message'),
@@ -81,7 +82,7 @@ def main(
         sys.exit(1)
 
     try:
-        config = load_config(model=model, language=language, commit_format=commit_format)
+        config = load_config(config_path=config_file, model=model, language=language, commit_format=commit_format)
     except SystemExit:
         return
     except Exception as e:
