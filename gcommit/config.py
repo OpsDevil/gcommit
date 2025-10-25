@@ -81,16 +81,20 @@ def load_config(
             typer.secho(f'Error reading config file {home_config_path}: {e}', fg=typer.colors.RED)
             sys.exit(1)
     else:
-        if not config_path and not os.getenv('GCOMMIT_CONFIG'):
-            try:
-                create_default_config(home_config_path)
-                typer.secho(f'Created default config at {home_config_path}', fg=typer.colors.GREEN)
-                typer.echo('Please edit the config file and set your OpenAI API key.')
-                with open(home_config_path, encoding='utf-8') as f:
-                    home_config = yaml.safe_load(f) or {}
-            except Exception as e:
-                typer.secho(f'Error creating default config: {e}', fg=typer.colors.RED)
-                sys.exit(1)
+        # If a config file was explicitly provided but doesn't exist, error out
+        if config_path or os.getenv('GCOMMIT_CONFIG'):
+            typer.secho(f'Error: Config file not found: {home_config_path}', fg=typer.colors.RED)
+            sys.exit(1)
+        # Otherwise, create default config
+        try:
+            create_default_config(home_config_path)
+            typer.secho(f'Created default config at {home_config_path}', fg=typer.colors.GREEN)
+            typer.echo('Please edit the config file and set your OpenAI API key.')
+            with open(home_config_path, encoding='utf-8') as f:
+                home_config = yaml.safe_load(f) or {}
+        except Exception as e:
+            typer.secho(f'Error creating default config: {e}', fg=typer.colors.RED)
+            sys.exit(1)
     local_config_path = find_local_config()
     local_config = {}
     if local_config_path:
