@@ -1,0 +1,28 @@
+Follow Conventional Commits specification (https://www.conventionalcommits.org/):
+
+Format: <type>: <subject>
+
+Types:
+- feat: New feature
+- fix: Bug fix
+- docs: Documentation changes
+- style: Code style/formatting (no logic change)
+- refactor: Code refactoring
+- test: Adding/updating tests
+- chore: Build/tooling changes
+- perf: Performance improvements
+
+Rules:
+- Use lowercase for type
+- Subject in imperative mood ("add" not "added")
+- No period at end of subject
+- Subject max 72 chars
+- Body max 72 chars per line (if needed)
+- Separate subject and body with blank line
+- Output exactly ONE commit message
+
+Example:
+feat: add JWT authentication
+
+Implement JWT-based authentication with refresh tokens.
+Add middleware for protected routes.
