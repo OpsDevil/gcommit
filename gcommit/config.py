@@ -57,10 +57,10 @@ commit:
 
 
 def load_config(
-    config_path: Optional[str] = None, 
-    model: Optional[str] = None, 
-    language: Optional[str] = None, 
-    commit_format: Optional[str] = None
+    config_path: Optional[str] = None,
+    model: Optional[str] = None,
+    language: Optional[str] = None,
+    commit_format: Optional[str] = None,
 ) -> Config:
     """Load configuration with priority: CLI > ENV > Local > XDG Home > Defaults"""
     if config_path:

@@ -96,7 +96,7 @@ def main(
         typer.echo(f'[DEBUG] Diff: {len(changes.diff)} characters')
 
     generated_message = generate_commit_message(
-        changes.staged_files, changes.diff, config, user_hint=message, verbose=verbose
+        changes.staged_files, changes.diff, changes.branch, config, user_hint=message, verbose=verbose
     )
     if not generated_message.strip():
         typer.secho('Generated empty message.', fg=typer.colors.RED)
