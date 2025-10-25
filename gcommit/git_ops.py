@@ -14,6 +14,7 @@ class GitChanges:
 
     staged_files: List[str]
     diff: str
+    branch: str
 
 
 def check_git_repo() -> bool:
@@ -53,6 +54,18 @@ def get_diff() -> str:
         sys.exit(1)
 
 
+def get_current_branch() -> str:
+    """Get current git branch name"""
+    try:
+        result = subprocess.run(
+            ['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
+            capture_output=True, text=True, check=True
+        )
+        return result.stdout.strip()
+    except subprocess.CalledProcessError:
+        return "unknown"
+
+
 def get_git_changes() -> GitChanges:
     """Get all git changes (staged files + diff)"""
     if not check_git_repo():
@@ -65,7 +78,8 @@ def get_git_changes() -> GitChanges:
         sys.exit(1)
 
     diff = get_diff()
-    return GitChanges(staged_files=staged_files, diff=diff)
+    branch = get_current_branch()
+    return GitChanges(staged_files=staged_files, diff=diff, branch=branch)
 
 
 def make_commit(message: str) -> None:

@@ -6,6 +6,7 @@ Language: {language}
 
 {user_context}
 Staged files: {files_list}
+Branch: {branch_name}
 
 Git diff:
 {diff}

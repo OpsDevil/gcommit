@@ -19,7 +19,7 @@ def load_prompt(format_name: str) -> str:
     return (prompts_dir / 'conventional.txt').read_text()
 
 
-def build_prompt(staged_files: List[str], diff: str, config: Config, user_hint: Optional[str] = None) -> str:
+def build_prompt(staged_files: List[str], diff: str, branch_name: str, config: Config, user_hint: Optional[str] = None) -> str:
     """Build prompt for LLM"""
     files_list = ', '.join(staged_files)
     if config.commit_format == 'custom':
@@ -41,6 +41,7 @@ def build_prompt(staged_files: List[str], diff: str, config: Config, user_hint: 
         instructions=instructions,
         user_context=user_context,
         files_list=files_list,
+        branch_name=branch_name,
         diff=diff
     )
 
@@ -59,10 +60,10 @@ def clean_markdown_code_blocks(text: str) -> str:
 
 
 def generate_commit_message(
-    staged_files: List[str], diff: str, config: Config, user_hint: Optional[str] = None, verbose: bool = False
+    staged_files: List[str], diff: str, branch_name: str, config: Config, user_hint: Optional[str] = None, verbose: bool = False
 ) -> str:
     """Generate commit message using OpenAI API"""
-    prompt = build_prompt(staged_files, diff, config, user_hint)
+    prompt = build_prompt(staged_files, diff, branch_name, config, user_hint)
     if verbose:
         typer.echo('[DEBUG] Prompt:')
         typer.echo('=' * 80)
