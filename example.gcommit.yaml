@@ -1,0 +1,12 @@
+# Gcommit Configuration Example
+# Copy this file to ~/.config/gcommit/config.yaml and customize
+
+llm:
+  api_key: sk-your-key-here
+  model: gpt-4o-mini
+  temperature: 0.3
+  max_tokens: 500
+
+commit:
+  language: english
+  format: conventional
