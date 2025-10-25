@@ -27,6 +27,7 @@ dependencies = [
 
 [project.scripts]
 gcommit = "gcommit.main:cli"
+git-ai-commit = "gcommit.main:cli"
 
 [project.urls]
 Homepage = "https://github.com/OpsDevil/gcommit"
