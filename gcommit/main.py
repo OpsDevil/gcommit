@@ -22,10 +22,26 @@ def cli():
     app()
 
 
+def get_editor() -> str:
+    """Find editor using git's priority order"""
+    if git_editor := os.getenv('GIT_EDITOR'):
+        return git_editor
+    try:
+        result = subprocess.run(['git', 'config', 'core.editor'], capture_output=True, text=True, check=False)
+        if result.returncode == 0 and result.stdout.strip():
+            return result.stdout.strip()
+    except FileNotFoundError:
+        pass
+    if visual := os.getenv('VISUAL'):
+        return visual
+    if editor := os.getenv('EDITOR'):
+        return editor
+    return 'vim'
+
+
 def edit_in_editor(message: str) -> Optional[str]:
     """Open editor to edit commit message"""
-    # TODO: add support for other env, gitconfig, etc.
-    editor = os.getenv('EDITOR', 'vim')
+    editor = get_editor()
 
     with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', suffix='.txt', delete=False) as f:
         f.write(message)
@@ -42,27 +58,23 @@ def edit_in_editor(message: str) -> Optional[str]:
             pass
 
 
-def interactive_confirm(message: str) -> Optional[str]:
-    """Ask user to confirm or edit commit message."""
+def interactive_confirm(message: str) -> tuple[Optional[str], bool]:
+    """
+    Ask user to confirm or edit commit message
+    Returns:
+        tuple: (message or None, is_cancelled_by_user)
+    """
     choice = input('\n[y]es / [n]o / [e]dit: ').strip().lower()
-
     if choice in ['y', 'yes']:
-        return message
-
+        return message, False
     if choice in ['n', 'no']:
-        typer.secho('Commit cancelled', fg=typer.colors.RED)
-        return None
-
+        return None, True
     if choice in ['e', 'edit']:
         typer.echo('Opening editor...')
         edited = edit_in_editor(message)
         if edited:
-            return edited
-        typer.secho('Commit cancelled (empty message)', fg=typer.colors.RED)
-        return None
-
-    typer.secho('Invalid choice. Commit cancelled', fg=typer.colors.RED)
-    return None
+            return edited, False
+    return None, True
 
 
 @app.command()
@@ -113,13 +125,15 @@ def main(
             sys.exit(1)
         final_message = edited_message
     else:
-        final_message = interactive_confirm(generated_message)
+        final_message, is_user_cancelled = interactive_confirm(generated_message)
         if not final_message:
-            typer.secho('Commit cancelled (empty message).', fg=typer.colors.RED)
+            if is_user_cancelled:
+                typer.secho('Commit cancelled.', fg=typer.colors.RED)
+            else:
+                typer.secho('Commit cancelled (empty message).', fg=typer.colors.RED)
             sys.exit(1)
 
     make_commit(final_message)
-
     typer.secho('Committed successfully', fg=typer.colors.GREEN)
 
 
