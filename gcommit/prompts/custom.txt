@@ -1,0 +1,5 @@
+Use the following custom template for commit message:
+
+{template}
+
+Follow the template structure and fill with appropriate content based on the changes.

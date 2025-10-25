@@ -1,0 +1,14 @@
+Write a simple, clear commit message in imperative mood.
+
+Rules:
+- Start with a verb ("add", "fix", "update", etc.)
+- No period at end
+- Max 72 chars total
+- Single line only, no body
+- Be concise and descriptive
+- Output exactly ONE commit message
+
+Examples:
+add user authentication
+fix login validation bug
+update dependencies to latest versions

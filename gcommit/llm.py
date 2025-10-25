@@ -1,6 +1,7 @@
 """LLM integration module"""
 
 import time
+from pathlib import Path
 from typing import List, Optional
 
 import typer
@@ -9,96 +10,39 @@ from openai import OpenAI
 from gcommit.config import Config, load_config
 
 
+def load_prompt(format_name: str) -> str:
+    """Load prompt template from file"""
+    prompts_dir = Path(__file__).parent / 'prompts'
+    prompt_file = prompts_dir / f'{format_name}.txt'
+    if prompt_file.exists():
+        return prompt_file.read_text()
+    return (prompts_dir / 'conventional.txt').read_text()
+
+
 def build_prompt(staged_files: List[str], diff: str, config: Config, user_hint: Optional[str] = None) -> str:
     """Build prompt for LLM"""
     files_list = ', '.join(staged_files)
-
-    # Format-specific instructions
-    format_instructions = {
-        'conventional': """
-Follow Conventional Commits specification (https://www.conventionalcommits.org/):
-
-Format: <type>: <subject>
-
-Types:
-- feat: New feature
-- fix: Bug fix
-- docs: Documentation changes
-- style: Code style/formatting (no logic change)
-- refactor: Code refactoring
-- test: Adding/updating tests
-- chore: Build/tooling changes
-- perf: Performance improvements
-
-Rules:
-- Use lowercase for type
-- Subject in imperative mood ("add" not "added")
-- No period at end of subject
-- Subject max 72 chars
-- Body max 72 chars per line (if needed)
-- Separate subject and body with blank line
-- Output exactly ONE commit message
-
-Example:
-feat: add JWT authentication
-
-Implement JWT-based authentication with refresh tokens.
-Add middleware for protected routes.
-""",
-        'simple': """
-Write a simple, clear commit message in imperative mood.
-
-Rules:
-- Start with a verb ("add", "fix", "update", etc.)
-- No period at end
-- Max 72 chars total
-- Single line only, no body
-- Be concise and descriptive
-- Output exactly ONE commit message
-
-Examples:
-add user authentication
-fix login validation bug
-update dependencies to latest versions
-""",
-    }
-
     if config.commit_format == 'custom':
         if config.custom_template:
-            format_instructions['custom'] = f"""
-Use the following custom template for commit message:
-
-{config.custom_template}
-
-Follow the template structure and fill with appropriate content based on the changes.
-"""
+            instructions = load_prompt('custom').format(template=config.custom_template)
         else:
             typer.secho("Error: custom_template not configured for 'custom' format", fg=typer.colors.RED)
             exit(1)
+    else:
+        instructions = load_prompt(config.commit_format)
+    base_template = load_prompt('base')
 
-    instructions = format_instructions.get(config.commit_format, format_instructions['conventional'])
-
-    prompt = f"""You are a Git commit message generator.
-Analyze the git diff and generate a commit message.
-
-Language: {config.language}
-{instructions}
-"""
-
+    user_context = ""
     if user_hint:
-        prompt += f"""User context: {user_hint}
-(Use this as additional context to understand the changes better)
+        user_context = f"User context: {user_hint}\n(Use this as additional context to understand the changes better)\n\n"
 
-"""
-
-    prompt += f"""Staged files: {files_list}
-
-Git diff:
-{diff}
-
-Generate a commit message following the rules above."""
-
-    return prompt
+    return base_template.format(
+        language=config.language,
+        instructions=instructions,
+        user_context=user_context,
+        files_list=files_list,
+        diff=diff
+    )
 
 
 def clean_markdown_code_blocks(text: str) -> str:
